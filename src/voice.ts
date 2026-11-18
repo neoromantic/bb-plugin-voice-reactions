@@ -182,6 +182,7 @@ export function createVoice(log: VoiceLog, env: Readonly<Record<string, string |
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let pending = "";
+    let base64 = "";
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -191,11 +192,14 @@ export function createVoice(log: VoiceLog, env: Readonly<Record<string, string |
         const event = text.startsWith("data:") ? parseJson(text.slice(5)) : null;
         const choice = isRecord(event) && Array.isArray(event.choices) ? event.choices[0] : null;
         const delta = isRecord(choice) && isRecord(choice.delta) ? choice.delta.audio : null;
-        if (isRecord(delta) && typeof delta.data === "string" && delta.data) {
-          play(current, delta.data);
-        }
+        if (!isRecord(delta) || typeof delta.data !== "string") continue;
+        base64 += delta.data;
+        const whole = base64.length - (base64.length % 4);
+        if (whole > 0) play(current, base64.slice(0, whole));
+        base64 = base64.slice(whole);
       }
     }
+    if (base64) play(current, base64);
     return end(current, current.chunks > 0 ? null : "empty response");
   }
 

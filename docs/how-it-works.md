@@ -47,17 +47,20 @@ in, so a message can be 60% `grumble` and 30% `tired`. A refused question counts
 | ----------------- | ------------------------------------------- | ----------------------------- |
 | TypeSafe          | `api.typesafe.ai/v1/systemone`              | `jev-latest`                  |
 | OpenAI            | `api.openai.com/v1/decisions`               | `gpt-6-luna`                  |
-| Vercel AI Gateway | `ai-gateway.vercel.sh/v1/decisions`         | `openai/gpt-6-luna-decisions` |
+| Vercel AI Gateway | `ai-gateway.vercel.sh/v1/decisions`         | `typesafe-ai/jev`             |
 | OpenRouter        | `openrouter.ai/api/alpha/decisions` (alpha) | `openai/gpt-6-luna-decisions` |
 
-With `decisionProvider` on `auto` the first provider in this order that has a key is used.
+With `decisionProvider` on `auto` the first provider in this order that has a key is used. An
+OpenAI project without access to `gpt-6-luna` answers HTTP 403; add a TypeSafe key, or set
+`decisionProvider` to a provider that works for you.
 TypeSafe and OpenRouter take the question as `state` and `criteria`; OpenAI and Vercel take
 `input` and `choices`. A decision has 5 seconds.
 
 ## The voice
 
-The voice model writes and speaks the line itself; there is no text step in between. It gets the
-`persona` setting as its instructions and one message:
+The voice model writes and speaks the line itself; there is no text step in between. Its
+instructions are the chosen role, or your own `persona` text ([roles](roles.md)), and it gets
+one message:
 
 ```text
 Reaction to give: grumble 60% (irritation, indignation or swearing: commiserate, soothe); tired 30% (…)
@@ -73,7 +76,9 @@ React now.
   Each line is a `response.create` with `conversation: "none"` and its own input, so threads
   never share context.
 - **OpenRouter** (`openai/gpt-audio` through a streamed chat completion, voice `alloy`): one
-  HTTPS request per line. It starts slower than the Realtime socket.
+  HTTPS request per line. The audio arrives as fragments of one base64 string, so the
+  characters left over after each whole group of four are carried into the next fragment. It
+  starts slower than the Realtime socket.
 
 Audio is 24 kHz 16-bit mono PCM. The player starts when the decision says to speak, and each
 chunk is written to its stdin as it arrives; nothing is buffered or written to disk. One line

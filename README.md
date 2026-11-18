@@ -36,16 +36,20 @@ winget install ffmpeg      # Windows
 
 ## Quickstart
 
-1. Give the plugin a key that can decide and one that can speak. One OpenAI or OpenRouter key
-   does both:
+1. Give the plugin a key that can decide and one that can speak. A TypeSafe key decides and an
+   OpenAI key speaks:
 
    ```sh
+   bb plugin config voice-reactions set typesafeApiKey <key>
    bb plugin config voice-reactions set openaiApiKey <key>
    bb plugin reload voice-reactions
    ```
 
-   A key already in the BB server's environment (`OPENAI_API_KEY`, `OPENROUTER_API_KEY`,
-   `TYPESAFE_API_KEY`, `AI_GATEWAY_API_KEY`) is picked up without this step.
+   One OpenAI key can do both only if its project has access to the Decisions model
+   `gpt-6-luna` as well as to the Realtime model; without it the log shows
+   `decision failed: HTTP 403`. A key already in the BB server's environment
+   (`TYPESAFE_API_KEY`, `OPENAI_API_KEY`, `AI_GATEWAY_API_KEY`, `OPENROUTER_API_KEY`) is picked
+   up without this step.
 
 2. Tell any agent "great, go ahead" and listen.
 3. See what happened:
@@ -55,7 +59,7 @@ winget install ffmpeg      # Windows
    ```
 
    ```text
-   turn:creq_k2m7: openai 148ms → ack 85%
+   turn:creq_k2m7: typesafe 212ms → ack 85%
    turn:creq_k2m7: spoken, 6 chunks, 96000 bytes, first audio 910ms after the message
    ```
 
@@ -70,8 +74,10 @@ winget install ffmpeg      # Windows
   you write. Close runners-up are mixed in, so a message can be 60% `grumble` and 30% `tired`.
 - By default an ordinary question or instruction gets `none`. Handoffs, thanks, good news,
   irritation, fatigue, surprise and an explicit request to speak get a reaction.
-- The voice model writes and speaks the line itself in the persona you set. No text step in
-  between, no audio files: chunks go straight to the player.
+- Twelve roles to speak in, from a deadpan butler to a starship computer, a Thai-English
+  shopkeeper or a doting grandmother, a random one per line, or a character you write yourself.
+- The voice model writes and speaks the line itself. No text step in between, no audio files:
+  chunks go straight to the player.
 - One line at a time and no backlog: a reaction that arrives while a line is playing is skipped.
 - Decides with TypeSafe, the OpenAI Decisions API, Vercel AI Gateway or OpenRouter. Speaks with
   OpenAI Realtime, over a socket kept warm, or with OpenRouter.
@@ -85,7 +91,8 @@ Settings are in **Settings → Plugins → Voice reactions**, or
 | Setting            | Default  | What it does                                                               |
 | ------------------ | -------- | -------------------------------------------------------------------------- |
 | `reactions`        | built in | The question and its options; see below                                    |
-| `persona`          | built in | The voice model's role: character, manner, tone, length of a line          |
+| `role`             | `butler` | Who reacts: one of twelve characters, `random`, or `custom`                |
+| `persona`          | –        | Your own character text, used when `role` is `custom`                      |
 | `voice`            | provider | Voice name: `marin` on OpenAI, `alloy` on OpenRouter                       |
 | `player`           | auto     | A player's path, or a full command that plays 24 kHz 16-bit mono PCM stdin |
 | `decisionProvider` | `auto`   | `typesafe`, `openai`, `gateway` or `openrouter`; auto takes the first key  |
@@ -114,17 +121,20 @@ TEXT
 The built-in list has 16 reactions and `none`; it is `DEFAULT_REACTIONS` in
 [`src/prompts.ts`](src/prompts.ts). An empty setting brings it back.
 
-### Persona
+### Roles
 
-The default is a deadpan butler who answers in the language of the message with a remark, a hum
-or a grunt of about ten words. Replace the whole text to change the character or the length:
+Twelve characters are built in, plus `random`, which draws a different one for every line:
 
 ```sh
-bb plugin config voice-reactions set persona "You voice a starship computer that overhears a developer talking to AI agents. Never answer the message or do the task; only react the way the given reaction says. One clipped line, at most eight words, calm and slightly ominous."
+bb plugin config voice-reactions set role starship
 ```
 
-A sitcom neighbour, black humour, a stern foreman, a playful Thai-English shopkeeper: the
-reaction says what to feel, the persona says who feels it.
+`butler` (the default), `starship`, `sitcom`, `gloom`, `foreman`, `shopkeeper`, `pirate`,
+`coach`, `monk`, `narrator`, `sysadmin`, `grandma`. The reaction says what to feel, the role
+says who feels it: the same irritation is "Most unfortunate, sir" from the butler and "Morale
+at forty percent, Captain" from the starship. For your own character set `role` to `custom`
+and write it in `persona`; the text stays saved while you try other roles. See
+[docs/roles.md](docs/roles.md).
 
 ### Providers
 
@@ -132,11 +142,13 @@ reaction says what to feel, the persona says who feels it.
 | ----------------- | ----------------------------- | ---------------------------------- |
 | TypeSafe          | `jev-latest`                  | –                                  |
 | OpenAI            | `gpt-6-luna` (Decisions API)  | `gpt-realtime` (Realtime, fastest) |
-| Vercel AI Gateway | `openai/gpt-6-luna-decisions` | –                                  |
+| Vercel AI Gateway | `typesafe-ai/jev`             | –                                  |
 | OpenRouter        | `openai/gpt-6-luna-decisions` | `openai/gpt-audio` (streamed chat) |
 
-OpenRouter's decisions endpoint is in alpha, and its voice path starts slower than the Realtime
-socket. OpenAI shuts `gpt-realtime` down on 2027-01-20; set `voiceModel` to its successor then.
+Checked against the live services: TypeSafe, Vercel AI Gateway and OpenAI Realtime. The OpenAI
+Decisions API, OpenRouter's alpha decisions endpoint and its voice path follow their
+documentation and have not been run live; the OpenRouter voice also starts slower than the
+Realtime socket. OpenAI shuts `gpt-realtime` down on 2027-01-20; set `voiceModel` to its successor then.
 
 ## Privacy
 

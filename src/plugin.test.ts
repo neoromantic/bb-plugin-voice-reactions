@@ -129,18 +129,20 @@ describe("voice", () => {
     });
     expect(promptOf(speech.body)).toContain('The message: \\"\\"\\"go ahead\\"\\"\\"');
 
-    const chunk = (bytes: number) =>
-      `data: ${JSON.stringify({ choices: [{ delta: { audio: { data: Buffer.alloc(bytes).toString("base64") } } }] })}\n\n`;
-    const first = chunk(480);
+    const whole = Buffer.from(Array.from({ length: 10 }, (_, index) => index)).toString("base64");
+    const fragment = (data: string) =>
+      `data: ${JSON.stringify({ choices: [{ delta: { audio: { data } } }] })}\n\n`;
+    const first = fragment(whole.slice(0, 3));
     speech.send(first.slice(0, 40));
     speech.send(first.slice(40));
-    await t.log.until(/stub got 480/);
+    speech.send(fragment(whole.slice(3, 9)));
+    await t.log.until(/stub got 6/);
     speech.send(`data: {"choices":[{"delta":{"audio":{"transcript":"Very good."}}}]}\n\n`);
-    speech.send(chunk(96));
+    speech.send(fragment(whole.slice(9)));
     speech.send("data: [DONE]\n\n");
     speech.close();
-    await t.log.until(/spoken, 2 chunks, 576 bytes/);
-    await t.log.until(/stub done 576/);
+    await t.log.until(/spoken, 2 chunks, 10 bytes/);
+    await t.log.until(/stub done 10/);
     expect(t.sessions.items).toHaveLength(0);
   });
 });
@@ -171,7 +173,7 @@ describe("decisions", () => {
 
   test.each([
     ["openai", "OPENAI_API_KEY", "/input/openai", "gpt-6-luna"],
-    ["gateway", "AI_GATEWAY_API_KEY", "/input/gateway", "openai/gpt-6-luna-decisions"],
+    ["gateway", "AI_GATEWAY_API_KEY", "/input/gateway", "typesafe-ai/jev"],
   ] as const)(
     "%s gets the question in the Decisions API shape",
     async (provider, env, path, model) => {
@@ -262,6 +264,20 @@ describe("messages", () => {
 });
 
 describe("settings", () => {
+  test("the chosen role speaks, and it can change between lines", async () => {
+    const t = await start({ settings: { role: "foreman" } });
+    const session = await t.sessions.next();
+    await t.say(turnRow({ text: "go ahead" }));
+    expect(promptOf(await session.requests.next())).toContain("stern old Russian foreman");
+    session.send(audio(48));
+    session.send(DONE);
+    await t.log.until(/player exited/);
+
+    await t.host.harness.behavior.setSettings({ role: "narrator" });
+    await t.say(turnRow({ text: "go on then" }));
+    expect(promptOf(await session.requests.next())).toContain("nature-documentary narrator");
+  });
+
   test("prompts, voice, models and keys from settings take effect without a reload", async () => {
     const t = await start({
       env: { OPENAI_API_KEY: "test-openai" },
@@ -270,6 +286,7 @@ describe("settings", () => {
     const first = await t.sessions.next();
     await t.host.harness.behavior.setSettings({
       reactions: "Pick one.\nnone: stay quiet\nbeep: anything at all: beep",
+      role: "custom",
       persona: "You are a starship computer.",
       voice: "cedar",
       voiceModel: "gpt-realtime-mini",

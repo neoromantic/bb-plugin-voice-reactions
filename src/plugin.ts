@@ -17,8 +17,9 @@ import {
   type Thread,
 } from "./messages.js";
 import { resolvePlayer } from "./player.js";
-import { DEFAULT_PERSONA, DEFAULT_REACTIONS } from "./prompts.js";
+import { DEFAULT_REACTIONS } from "./prompts.js";
 import { describeReactions, parseReactions } from "./reactions.js";
+import { CUSTOM_ROLE, RANDOM_ROLE, ROLE_NAMES, personaFor } from "./roles.js";
 import {
   VOICE_PROVIDERS,
   VOICE_PROVIDER_NAMES,
@@ -66,12 +67,21 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         experimental_multiline: true,
         default: DEFAULT_REACTIONS,
       },
+      role: {
+        type: "select",
+        label: "Role",
+        description:
+          "Who reacts. Random draws a different character for every line; custom uses your own persona.",
+        options: [...ROLE_NAMES, RANDOM_ROLE, CUSTOM_ROLE],
+        default: "butler",
+      },
       persona: {
         type: "string",
-        label: "Persona",
-        description: "The voice model's role: character, manner, tone and how long a line may be.",
+        label: "Your own persona",
+        description:
+          "Used when the role is custom: character, manner, tone and how long a line may be. Kept while another role is selected.",
         experimental_multiline: true,
-        default: DEFAULT_PERSONA,
+        default: "",
       },
       voice: {
         type: "string",
@@ -232,7 +242,7 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         key: message.key,
         createdAt: message.createdAt,
         voice: config.voice.trim() || VOICE_PROVIDERS[speaker.provider].voice,
-        instructions: config.persona.trim() || DEFAULT_PERSONA,
+        instructions: personaFor(config.role, config.persona, Math.random),
         prompt: [
           `Reaction to give: ${describeReactions(reactions, set)}`,
           `The message: """${clip(text, MESSAGE_CHARS)}"""`,

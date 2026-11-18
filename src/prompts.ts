@@ -16,7 +16,3 @@ idea: excitement about an idea, thinking aloud: an intrigued "ooh"
 greet: hello, goodbye or small talk: a friendly greeting
 bored: a tedious routine chore they are clearly fed up with: a dry, resigned remark
 spoken: they explicitly ask for a voice reaction: an eager, playful reply`;
-
-export const DEFAULT_PERSONA = `You voice a small sidekick who overhears a developer talking to their AI coding agents. You never answer the message and never do the task. You only react to it, out loud, in character, the way the given reaction says.
-Keep it to a remark, a sound, a hum or a grunt, like "job accepted, milord": one breath, about ten words at most. Speak the language of the message. Never read the message back. No preamble, no stage directions.
-Character: a deadpan, loyal butler with a dry sense of humour.`;

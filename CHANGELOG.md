@@ -10,8 +10,9 @@ First release.
 - A decision model picks the reaction from the `reactions` setting, or `none` for silence, and
   can mix close runners-up. Works with TypeSafe, the OpenAI Decisions API, Vercel AI Gateway and
   OpenRouter.
-- A voice model speaks one short line in the `persona` you set: OpenAI Realtime over a warm
-  socket, or OpenRouter through a streamed chat completion.
+- A voice model speaks one short line in the role you pick: twelve built-in characters, a
+  random one per line, or your own `persona` text. OpenAI Realtime over a warm socket, or
+  OpenRouter through a streamed chat completion.
 - Plays raw PCM through ffplay, SoX `play`, `aplay` or `paplay`, found automatically, or through
   the command in the `player` setting.
 - Keys come from the plugin's secret settings or the server's environment.

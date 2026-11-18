@@ -18,7 +18,7 @@ export const DECISION_PROVIDERS = {
     env: "AI_GATEWAY_API_KEY",
     url: "https://ai-gateway.vercel.sh/v1/decisions",
     shape: "input",
-    model: "openai/gpt-6-luna-decisions",
+    model: "typesafe-ai/jev",
   },
   openrouter: {
     env: "OPENROUTER_API_KEY",
