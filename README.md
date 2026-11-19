@@ -88,21 +88,22 @@ winget install ffmpeg      # Windows
 Settings are in **Settings → Plugins → Voice reactions**, or
 `bb plugin config voice-reactions set <setting> <value>`. They apply to the next message.
 
-| Setting            | Default  | What it does                                                               |
-| ------------------ | -------- | -------------------------------------------------------------------------- |
-| `reactions`        | built in | The question and its options; see below                                    |
-| `role`             | `butler` | Who reacts: one of sixteen characters, `random`, or `custom`               |
-| `persona`          | –        | Your own character text, used when `role` is `custom`                      |
-| `voice`            | role     | Voice name. Empty: the role's own voice on OpenAI, `alloy` on OpenRouter   |
-| `player`           | auto     | A player's path, or a full command that plays 24 kHz 16-bit mono PCM stdin |
-| `decisionProvider` | `auto`   | `typesafe`, `openai`, `gateway` or `openrouter`; auto takes the first key  |
-| `decisionModel`    | provider | Model id for the decision                                                  |
-| `voiceProvider`    | `auto`   | `openai` or `openrouter`; auto prefers OpenAI                              |
-| `voiceModel`       | provider | Model id for the voice: `gpt-realtime` or `openai/gpt-audio`               |
-| `typesafeApiKey`   | –        | Decides. Stored as a BB secret setting, like the three below               |
-| `openaiApiKey`     | –        | Decides and speaks                                                         |
-| `aiGatewayApiKey`  | –        | Decides. A Vercel AI Gateway key cannot speak                              |
-| `openrouterApiKey` | –        | Decides and speaks                                                         |
+| Setting            | Default  | What it does                                                                              |
+| ------------------ | -------- | ----------------------------------------------------------------------------------------- |
+| `reactions`        | built in | The question and its options; see below                                                   |
+| `role`             | `butler` | Who reacts: one of sixteen characters, `random`, or `custom`                              |
+| `persona`          | –        | Your own character text, used when `role` is `custom`                                     |
+| `language`         | auto     | Language of the line. Empty: Russian or English after the message, else the message's own |
+| `voice`            | role     | Voice name. Empty: the role's own voice on OpenAI, `alloy` on OpenRouter                  |
+| `player`           | auto     | A player's path, or a full command that plays 24 kHz 16-bit mono PCM stdin                |
+| `decisionProvider` | `auto`   | `typesafe`, `openai`, `gateway` or `openrouter`; auto takes the first key                 |
+| `decisionModel`    | provider | Model id for the decision                                                                 |
+| `voiceProvider`    | `auto`   | `openai` or `openrouter`; auto prefers OpenAI                                             |
+| `voiceModel`       | provider | Model id for the voice: `gpt-realtime` or `openai/gpt-audio`                              |
+| `typesafeApiKey`   | –        | Decides. Stored as a BB secret setting, like the three below                              |
+| `openaiApiKey`     | –        | Decides and speaks                                                                        |
+| `aiGatewayApiKey`  | –        | Decides. A Vercel AI Gateway key cannot speak                                             |
+| `openrouterApiKey` | –        | Decides and speaks                                                                        |
 
 ### Reactions
 

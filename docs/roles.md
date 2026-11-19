@@ -28,9 +28,18 @@ bb plugin config voice-reactions set role pirate
 | `random`     | A different one of the sixteen for every line                       |                                                 |              |
 | `custom`     | The text in your `persona` setting                                  |                                                 | `marin`      |
 
-Every role answers in the language of your message, except `shopkeeper`, which always speaks
-English, and `foreman`, which answers a non-Russian message in accented English. The exact texts
-are `ROLES` in [`src/roles.ts`](../src/roles.ts).
+The accent never decides the language. Each request names the language of the line: Russian for
+a message in Russian, English for one in plain English, otherwise "the same language as the
+message". `shopkeeper` always speaks English, and a `custom` persona gets no language line: your
+text decides. To fix one language for every line, set `language`:
+
+```sh
+bb plugin config voice-reactions set language German
+```
+
+A message in another Latin-script language written without any accented letters is taken for
+English; `language` is the way round that. The exact texts are `ROLES` in
+[`src/roles.ts`](../src/roles.ts).
 
 Each role has its own OpenAI voice, used while the `voice` setting is empty; set `voice` to
 force one voice for every role. On OpenRouter every role uses the provider's default voice. How
@@ -50,11 +59,14 @@ You voice a small sidekick who overhears a developer talking to their AI coding 
 # Delivery
 - ONE short line: a remark, a sound, a hum or a grunt. One breath, about ten words at most.
 - PERFORM it like a comic actor; never read it. …
-- Keep the character's accent STRONG and stable from the first word to the last.
 - …
 
+# Language and accent
+- The OUTPUT LANGUAGE is named with each message. EVERY word of your line is in that language, …
+- The accent is a way of pronouncing the OUTPUT LANGUAGE. It NEVER changes which language you speak: …
+
 # Character
-You are a booming old sea dog. Accent: thick West Country pirate, growling and rolling every R. Rum, storms and the plank for metaphors, with a great roaring laugh. Samples: "Arrr, she floats! Break out the rum!" "Blimey, that bug walked the plank!"
+You are a booming old sea dog. Accent: a thick West Country pirate growl laid over the output language, rolling every R. Rum, storms and the plank for metaphors, with a great roaring laugh. Samples: "Arrr, she floats! Break out the rum!" "Blimey, that bug walked the plank!"
 ```
 
 ## Your own persona

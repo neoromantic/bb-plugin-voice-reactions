@@ -19,7 +19,7 @@ import {
 import { resolvePlayer } from "./player.js";
 import { DEFAULT_REACTIONS } from "./prompts.js";
 import { linePrompt, parseReactions } from "./reactions.js";
-import { CUSTOM_ROLE, RANDOM_ROLE, ROLE_NAMES, personaFor } from "./roles.js";
+import { CUSTOM_ROLE, RANDOM_ROLE, ROLE_NAMES, lineLanguage, personaFor } from "./roles.js";
 import {
   VOICE_PROVIDERS,
   VOICE_PROVIDER_NAMES,
@@ -81,6 +81,13 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         description:
           "Used when the role is custom: character, manner, tone and how long a line may be. Kept while another role is selected.",
         experimental_multiline: true,
+        default: "",
+      },
+      language: {
+        type: "string",
+        label: "Language of the line",
+        description:
+          "A language name such as German. Empty: Russian for a message in Russian, English for one in English, otherwise the language of the message.",
         default: "",
       },
       voice: {
@@ -246,7 +253,13 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         createdAt: message.createdAt,
         voice: config.voice.trim() || roleVoice || VOICE_PROVIDERS[speaker.provider].voice,
         instructions: persona.instructions,
-        prompt: linePrompt(reactions, set, clip(text, MESSAGE_CHARS), context),
+        prompt: linePrompt(
+          reactions,
+          set,
+          clip(text, MESSAGE_CHARS),
+          context,
+          lineLanguage(text, config.language, persona.language),
+        ),
         player: command,
       });
     }

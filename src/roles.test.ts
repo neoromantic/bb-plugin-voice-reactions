@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { ROLES, ROLE_NAMES, personaFor } from "./roles.js";
+import { ROLES, ROLE_NAMES, lineLanguage, personaFor } from "./roles.js";
 
 const OPENAI_VOICES = [
   "alloy",
@@ -60,7 +60,44 @@ test("your own persona speaks only when the role is custom, and is kept otherwis
   expect(personaFor("custom", mine, () => 0)).toEqual({
     instructions: "You are a starship computer.",
     voice: null,
+    language: null,
   });
   expect(personaFor("pirate", mine, () => 0).instructions).toEndWith(ROLES.pirate.character);
   expect(personaFor("custom", " ", () => 0).instructions).toEndWith(ROLES.butler.character);
+});
+
+test.each(["coach", "foreman", "chef", "gloom", "grandma", "sysadmin"])(
+  "%s speaks the language of the message, whatever its accent",
+  (role) => {
+    const persona = personaFor(role, "", () => 0);
+    expect(persona.instructions).toContain(
+      "It NEVER changes which language you speak: a French accent on an English line is still English.",
+    );
+    expect(lineLanguage("Yes! All the tests are finally green!", "", persona.language)).toBe(
+      "English",
+    );
+    expect(lineLanguage("Ура! Наконец-то все тесты зелёные!", "", persona.language)).toBe(
+      "Russian",
+    );
+  },
+);
+
+test("the shopkeeper always speaks English and a custom persona sets its own language", () => {
+  const shopkeeper = personaFor("shopkeeper", "", () => 0);
+  expect(lineLanguage("Ура! Наконец-то все тесты зелёные!", "", shopkeeper.language)).toBe(
+    "English",
+  );
+  const custom = personaFor("custom", "You are a starship computer.", () => 0);
+  expect(lineLanguage("Ура! Наконец-то все тесты зелёные!", "", custom.language)).toBeNull();
+});
+
+test("other languages follow the message, and the language setting overrides everything", () => {
+  const butler = personaFor("butler", "", () => 0);
+  const same = "the same language as the message";
+  expect(lineLanguage("Großartig, alles läuft!", "", butler.language)).toBe(same);
+  expect(lineLanguage("Нарешті всі тести зелені, їй-богу!", "", butler.language)).toBe(same);
+  expect(lineLanguage("全部通过了", "", butler.language)).toBe(same);
+  expect(lineLanguage("fix PR #12 наконец-то, ура", "", butler.language)).toBe("Russian");
+  expect(lineLanguage("Yes!", " German ", butler.language)).toBe("German");
+  expect(lineLanguage("Ура!", "German", "English")).toBe("German");
 });

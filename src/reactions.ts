@@ -60,11 +60,17 @@ export function linePrompt(
   set: ReactionSet,
   message: string,
   context: string | null,
+  language: string | null,
 ) {
   return [
     `Reaction to give: ${describeReactions(reactions, set)}`,
     `The message: """${message}"""`,
     ...(context ? [`It replies to: """${context}"""`] : []),
-    "React now.",
+    ...(language
+      ? [
+          `OUTPUT LANGUAGE: ${language}. Every word of your line is in that language; your accent only changes how the words sound.`,
+          `React now, in ${language}.`,
+        ]
+      : ["React now."]),
   ].join("\n");
 }

@@ -7,7 +7,7 @@ import packageJson from "../package.json" with { type: "json" };
 import { isRecord, parseJson } from "../src/json.js";
 import { DEFAULT_REACTIONS } from "../src/prompts.js";
 import { linePrompt, parseReactions, type Reaction } from "../src/reactions.js";
-import { ROLE_NAMES, personaFor } from "../src/roles.js";
+import { ROLE_NAMES, lineLanguage, personaFor } from "../src/roles.js";
 import { realtimeRequest } from "../src/voice.js";
 
 const SAMPLES: Record<string, { message: string; reactions: Reaction[] }> = {
@@ -272,7 +272,8 @@ function linesToRun() {
     for (const role of list(values.roles)) {
       if (!ROLE_NAMES.some((name) => name === role)) throw new Error(`unknown role ${role}`);
       const persona = personaFor(role, "", () => 0);
-      const prompt = linePrompt(data.reactions, set, data.message, null);
+      const language = lineLanguage(data.message, "", persona.language);
+      const prompt = linePrompt(data.reactions, set, data.message, null, language);
       for (let take = 1; take <= takes; take += 1) {
         lines.push({ sample, role, take, persona, prompt });
       }
@@ -287,8 +288,10 @@ async function benchOpenai(model: string) {
   });
   const handshakeMs = await opened;
   for (const line of linesToRun()) {
-    for (const wanted of list(values.voices)) {
-      const voice = wanted === "role" ? (line.persona.voice ?? "marin") : wanted;
+    const voices = list(values.voices).map((wanted) =>
+      wanted === "role" ? (line.persona.voice ?? "marin") : wanted,
+    );
+    for (const voice of new Set(voices)) {
       const request = realtimeRequest(
         { instructions: line.persona.instructions, prompt: line.prompt, voice },
         ["audio"],

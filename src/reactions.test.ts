@@ -26,13 +26,17 @@ test("the choice leads, close runners-up are mixed in, none is silence", () => {
     { name: "grumble", share: 0.55 },
     { name: "tired", share: 0.3 },
   ]);
-  expect(linePrompt(mixed ?? [], set, "it broke", "the build")).toBe(
+  expect(linePrompt(mixed ?? [], set, "it broke", "the build", "English")).toBe(
     [
       "Reaction to give: grumble 55% (irritation); tired 30% (fatigue)",
       'The message: """it broke"""',
       'It replies to: """the build"""',
-      "React now.",
+      "OUTPUT LANGUAGE: English. Every word of your line is in that language; your accent only changes how the words sound.",
+      "React now, in English.",
     ].join("\n"),
+  );
+  expect(linePrompt(mixed ?? [], set, "it broke", null, null)).toEndWith(
+    'The message: """it broke"""\nReact now.',
   );
   expect(mixReactions("none", { none: 0.9 }, set)).toEqual([]);
   expect(mixReactions("dance", {}, set)).toBeNull();

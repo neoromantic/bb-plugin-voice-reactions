@@ -66,7 +66,8 @@ one message:
 Reaction to give: grumble 60% (irritation, indignation or swearing: commiserate, soothe); tired 30% (…)
 The message: """…"""
 It replies to: """…"""
-React now.
+OUTPUT LANGUAGE: English. Every word of your line is in that language; your accent only changes how the words sound.
+React now, in English.
 ```
 
 - **OpenAI** (`gpt-realtime` over the Realtime WebSocket, each role with its own voice): one socket is opened
