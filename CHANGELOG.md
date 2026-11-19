@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- The `shopkeeper` role now speaks English with a Thai accent for every message. In 0.1.0 a
+  message written in Russian could make it answer entirely in Thai.
+
 ## 0.1.0
 
 First release.

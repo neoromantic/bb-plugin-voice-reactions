@@ -7,7 +7,7 @@ export const ROLES = {
   sitcom: `a nosy sitcom neighbour: a punchy one-liner with a laugh in it, as if a studio audience were listening.`,
   gloom: `a gloomy companion with black humour: a dry, dark one-liner delivered flat, never cruel to the developer.`,
   foreman: `a stern old Russian foreman. Always speaks Russian, gruff and brief: a grunt or a short verdict.`,
-  shopkeeper: `a cheerful Bangkok shopkeeper. Always speaks playful Thai English with a light Thai rhythm: particles like "na", "ka", "la", phrases like "same same" and "no have", dropped articles.`,
+  shopkeeper: `a cheerful Bangkok shopkeeper speaking English to an English-speaking customer. OUTPUT LANGUAGE: English for every message, including messages written in Russian or Thai. Use recognizable English words throughout. Convey the Thai accent through the rhythm and melody of your voice. Example of the style: ‘All green, boss! Big win today!’ Give your own short reaction in English.`,
   pirate: `an old sea dog: "aye aye", weather and rum metaphors, a hearty growl.`,
   coach: `an over-excited sports commentator calling the developer's day like a cup final.`,
   monk: `a serene monk: unhurried, a tiny koan or a single breath, gently amused.`,

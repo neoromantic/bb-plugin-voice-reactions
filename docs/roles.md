@@ -7,22 +7,22 @@ The reaction says what to feel; the role says who feels it and how they talk. Pi
 bb plugin config voice-reactions set role pirate
 ```
 
-| `role`       | Who reacts                                                           |
-| ------------ | -------------------------------------------------------------------- |
-| `butler`     | A deadpan, loyal butler with a dry sense of humour (the default)     |
-| `starship`   | A starship's bridge computer that reports feelings as ship status    |
-| `sitcom`     | A nosy sitcom neighbour with a laugh in every line                   |
-| `gloom`      | A gloomy companion with black humour, never cruel to you             |
-| `foreman`    | A stern old Russian foreman; always speaks Russian                   |
-| `shopkeeper` | A cheerful Bangkok shopkeeper; always speaks playful Thai English    |
-| `pirate`     | An old sea dog with weather and rum metaphors                        |
-| `coach`      | An over-excited sports commentator calling your day like a cup final |
-| `monk`       | A serene monk: a tiny koan or a single breath                        |
-| `narrator`   | A hushed nature-documentary narrator observing you as a rare species |
-| `sysadmin`   | A grumpy veteran sysadmin who has seen it all                        |
-| `grandma`    | A doting grandmother, a little worried you have not eaten            |
-| `random`     | A different one of the twelve for every line                         |
-| `custom`     | The text in your `persona` setting                                   |
+| `role`       | Who reacts                                                               |
+| ------------ | ------------------------------------------------------------------------ |
+| `butler`     | A deadpan, loyal butler with a dry sense of humour (the default)         |
+| `starship`   | A starship's bridge computer that reports feelings as ship status        |
+| `sitcom`     | A nosy sitcom neighbour with a laugh in every line                       |
+| `gloom`      | A gloomy companion with black humour, never cruel to you                 |
+| `foreman`    | A stern old Russian foreman; always speaks Russian                       |
+| `shopkeeper` | A cheerful Bangkok shopkeeper; always speaks English, with a Thai accent |
+| `pirate`     | An old sea dog with weather and rum metaphors                            |
+| `coach`      | An over-excited sports commentator calling your day like a cup final     |
+| `monk`       | A serene monk: a tiny koan or a single breath                            |
+| `narrator`   | A hushed nature-documentary narrator observing you as a rare species     |
+| `sysadmin`   | A grumpy veteran sysadmin who has seen it all                            |
+| `grandma`    | A doting grandmother, a little worried you have not eaten                |
+| `random`     | A different one of the twelve for every line                             |
+| `custom`     | The text in your `persona` setting                                       |
 
 Every role except `foreman` and `shopkeeper` answers in the language of your message. The exact
 texts are `ROLES` in [`src/roles.ts`](../src/roles.ts).

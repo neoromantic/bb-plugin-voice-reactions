@@ -1,6 +1,6 @@
 {
   "name": "bb-plugin-voice-reactions",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "BB plugin: a short spoken reaction to what you write to your agents.",
   "keywords": [
     "bb-plugin"
