@@ -28,7 +28,7 @@ test("the choice leads, close runners-up are mixed in, none is silence", () => {
   ]);
   expect(linePrompt(mixed ?? [], set, "it broke", "the build", "English")).toBe(
     [
-      "Reaction to give: grumble 55% (irritation); tired 30% (fatigue)",
+      "Reaction to give: grumble (irritation). With a touch of: tired (fatigue)",
       'The message: """it broke"""',
       'It replies to: """the build"""',
       "OUTPUT LANGUAGE: English. Every word of your line is in that language; your accent only changes how the words sound.",
@@ -38,6 +38,9 @@ test("the choice leads, close runners-up are mixed in, none is silence", () => {
   expect(linePrompt(mixed ?? [], set, "it broke", null, null)).toEndWith(
     'The message: """it broke"""\nReact now.',
   );
+  const sure = linePrompt([{ name: "ack", share: 0.8 }], set, "go ahead", null, "English");
+  expect(sure).toStartWith("Reaction to give: ack (handoff)\n");
+  expect(sure).not.toMatch(/\d|%/);
   expect(mixReactions("none", { none: 0.9 }, set)).toEqual([]);
   expect(mixReactions("dance", {}, set)).toBeNull();
 });

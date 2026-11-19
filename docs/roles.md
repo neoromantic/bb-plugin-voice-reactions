@@ -28,7 +28,8 @@ bb plugin config voice-reactions set role pirate
 | `random`     | A different one of the sixteen for every line                       |                                                 |              |
 | `custom`     | The text in your `persona` setting                                  |                                                 | `marin`      |
 
-The accent never decides the language. Each request names the language of the line: Russian for
+The accent never decides the language. The role's instructions and each request name the
+language of the line: Russian for
 a message in Russian, English for one in plain English, otherwise "the same language as the
 message". `shopkeeper` always speaks English, and a `custom` persona gets no language line: your
 text decides. To fix one language for every line, set `language`:
@@ -48,25 +49,34 @@ it.
 
 ## What a role is
 
-Each role is the same frame plus a character:
+Each role is the same frame plus a character. The frame opens and closes with the language of
+the line, and the sample lines are included only when that language is English, so they cannot
+pull a Russian line into English:
 
 ```text
+# OUTPUT LANGUAGE: English
+- EVERY word of your line is in English, using its real, recognizable words. This overrides everything below.
+- Your accent is only a way of pronouncing English. It NEVER changes which language you speak: …
+- Keep the accent STRONG and stable from the first word to the last, …
+
 # Role
 You voice a small sidekick who overhears a developer talking to their AI coding agents.
 - You NEVER answer the message and NEVER do the task. You only react to it, out loud, in character, the way the given reaction says.
 - NEVER read the message back. No preamble. Never say stage directions aloud.
+- …
 
 # Delivery
 - ONE short line: a remark, a sound, a hum or a grunt. One breath, about ten words at most.
 - PERFORM it like a comic actor; never read it. …
-- …
-
-# Language and accent
-- The OUTPUT LANGUAGE is named with each message. EVERY word of your line is in that language, …
-- The accent is a way of pronouncing the OUTPUT LANGUAGE. It NEVER changes which language you speak: …
 
 # Character
-You are a booming old sea dog. Accent: a thick West Country pirate growl laid over the output language, rolling every R. Rum, storms and the plank for metaphors, with a great roaring laugh. Samples: "Arrr, she floats! Break out the rum!" "Blimey, that bug walked the plank!"
+You are a booming old sea dog. Accent: a thick West Country pirate growl laid over the output language, rolling every R. Rum, storms and the plank for metaphors, with a great roaring laugh.
+
+# Sample lines
+They only show the style; never reuse them. "Arrr, she floats! Break out the rum!" "Blimey, that bug walked the plank!"
+
+# Reminder
+Speak English.
 ```
 
 ## Your own persona

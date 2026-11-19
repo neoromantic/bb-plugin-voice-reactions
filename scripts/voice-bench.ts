@@ -7,7 +7,7 @@ import packageJson from "../package.json" with { type: "json" };
 import { isRecord, parseJson } from "../src/json.js";
 import { DEFAULT_REACTIONS } from "../src/prompts.js";
 import { linePrompt, parseReactions, type Reaction } from "../src/reactions.js";
-import { ROLE_NAMES, lineLanguage, personaFor } from "../src/roles.js";
+import { ROLE_NAMES, personaFor } from "../src/roles.js";
 import { realtimeRequest } from "../src/voice.js";
 
 const SAMPLES: Record<string, { message: string; reactions: Reaction[] }> = {
@@ -271,9 +271,8 @@ function linesToRun() {
     if (!data) throw new Error(`unknown sample ${sample}`);
     for (const role of list(values.roles)) {
       if (!ROLE_NAMES.some((name) => name === role)) throw new Error(`unknown role ${role}`);
-      const persona = personaFor(role, "", () => 0);
-      const language = lineLanguage(data.message, "", persona.language);
-      const prompt = linePrompt(data.reactions, set, data.message, null, language);
+      const persona = personaFor({ role, persona: "", language: "" }, data.message, () => 0);
+      const prompt = linePrompt(data.reactions, set, data.message, null, persona.language);
       for (let take = 1; take <= takes; take += 1) {
         lines.push({ sample, role, take, persona, prompt });
       }

@@ -50,7 +50,7 @@ describe("voice", () => {
               {
                 type: "input_text",
                 text: [
-                  'Reaction to give: grumble 60% (irritation, indignation or swearing: commiserate, soothe); tired 30% (fatigue, a late hour, "enough for today": a sympathetic sigh)',
+                  'Reaction to give: grumble (irritation, indignation or swearing: commiserate, soothe). With a touch of: tired (fatigue, a late hour, "enough for today": a sympathetic sigh)',
                   'The message: """everything broke again"""',
                   'It replies to: """the build failed"""',
                   "OUTPUT LANGUAGE: English. Every word of your line is in that language; your accent only changes how the words sound.",

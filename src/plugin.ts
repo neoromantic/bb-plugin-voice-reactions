@@ -19,7 +19,7 @@ import {
 import { resolvePlayer } from "./player.js";
 import { DEFAULT_REACTIONS } from "./prompts.js";
 import { linePrompt, parseReactions } from "./reactions.js";
-import { CUSTOM_ROLE, RANDOM_ROLE, ROLE_NAMES, lineLanguage, personaFor } from "./roles.js";
+import { CUSTOM_ROLE, RANDOM_ROLE, ROLE_NAMES, personaFor } from "./roles.js";
 import {
   VOICE_PROVIDERS,
   VOICE_PROVIDER_NAMES,
@@ -245,7 +245,7 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         bb.log.warn(`${message.key}: no audio player found, set the player setting`);
         return;
       }
-      const persona = personaFor(config.role, config.persona, Math.random);
+      const persona = personaFor(config, text, Math.random);
       const roleVoice = speaker.provider === "openai" ? persona.voice : null;
       voice.speak({
         ...speaker,
@@ -253,13 +253,7 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         createdAt: message.createdAt,
         voice: config.voice.trim() || roleVoice || VOICE_PROVIDERS[speaker.provider].voice,
         instructions: persona.instructions,
-        prompt: linePrompt(
-          reactions,
-          set,
-          clip(text, MESSAGE_CHARS),
-          context,
-          lineLanguage(text, config.language, persona.language),
-        ),
+        prompt: linePrompt(reactions, set, clip(text, MESSAGE_CHARS), context, persona.language),
         player: command,
       });
     }

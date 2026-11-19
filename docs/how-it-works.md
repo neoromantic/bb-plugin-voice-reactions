@@ -41,7 +41,8 @@ gets the message (up to 800 characters) and what it replies to: the lines quoted
 else the last 300 characters of the thread's previous reply.
 
 The chosen option leads. Up to two other options with a probability of at least 0.2 are mixed
-in, so a message can be 60% `grumble` and 30% `tired`. A refused question counts as `none`.
+in, so a message can be 60% `grumble` and 30% `tired`. The voice model is told the order, not
+the numbers: given "80%" it once announced that 80 percent of a database was gone. A refused question counts as `none`.
 
 | Provider          | Endpoint                                    | Default model                 |
 | ----------------- | ------------------------------------------- | ----------------------------- |
@@ -63,7 +64,7 @@ instructions are the chosen role, or your own `persona` text ([roles](roles.md))
 one message:
 
 ```text
-Reaction to give: grumble 60% (irritation, indignation or swearing: commiserate, soothe); tired 30% (…)
+Reaction to give: grumble (irritation, indignation or swearing: commiserate, soothe). With a touch of: tired (…)
 The message: """…"""
 It replies to: """…"""
 OUTPUT LANGUAGE: English. Every word of your line is in that language; your accent only changes how the words sound.

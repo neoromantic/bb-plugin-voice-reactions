@@ -50,9 +50,8 @@ export function mixReactions(
 }
 
 function describeReactions(reactions: Reaction[], set: ReactionSet) {
-  return reactions
-    .map((r) => `${r.name} ${Math.round(r.share * 100)}% (${set.criteria[r.name]})`)
-    .join("; ");
+  const [main, ...others] = reactions.map((r) => `${r.name} (${set.criteria[r.name]})`);
+  return others.length > 0 ? `${main}. With a touch of: ${others.join("; ")}` : `${main}`;
 }
 
 export function linePrompt(
