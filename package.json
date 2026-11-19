@@ -1,6 +1,6 @@
 {
   "name": "bb-plugin-voice-reactions",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "BB plugin: a short spoken reaction to what you write to your agents.",
   "keywords": [
     "bb-plugin"
@@ -34,7 +34,8 @@
     "check": "bun run format:check && bun run lint && tsc --noEmit && bun run check:knip",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "lint": "oxlint --deny-warnings"
+    "lint": "oxlint --deny-warnings",
+    "bench:voice": "bun scripts/voice-bench.ts"
   },
   "dependencies": {
     "ws": "8.18.3"

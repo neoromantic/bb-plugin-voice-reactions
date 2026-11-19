@@ -92,6 +92,9 @@ BB runs it on Node, so plugin code uses Node APIs only.
   provider, so a test never needs a key, the network or a sound device.
 - Build: `bun run bundle` (the official `bb-app` CLI). Commit `dist/` with every source change;
   CI does not run BB.
+- `bun run bench:voice` is the one live tool: it calls the real voice services with keys from
+  the environment, costs money and writes WAV files without playing them. It is never part of
+  `check` or `test`; see "Comparing voices and models" in `docs/roles.md`.
 - Never run a real audio player in tests or checks: the `player` setting points at
   `test/player-stub.ts`.
 - Logs must not contain message text, response bodies, keys or the text of foreign errors; see

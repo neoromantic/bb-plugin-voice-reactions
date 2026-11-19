@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0
+
+- Roles are louder and funnier: each one now has an accent, a manner and sample lines, and is
+  told to perform the line, not read it. Four new roles: `noir`, `cowboy`, `chef`, `surfer`.
+- Each role has its own OpenAI voice, used while the `voice` setting is empty. Before, every
+  role spoke with `marin`; set `voice` to `marin` to keep that.
+- The voice model is told which reaction leads and which only colour it, without the
+  probabilities, so it can no longer say them aloud.
+- The language of the line is named in every request, apart from the accent: Russian for a
+  message in Russian, English for one in English, otherwise the language of the message. A new
+  `language` setting fixes one language. `foreman` therefore answers an English message in
+  English with a heavy Russian accent.
+- `bun run bench:voice` records made-up messages across roles, voices and models and measures
+  time to first audio, for choosing a voice by ear.
+
 ## 0.1.1
 
 - Align the SQLite type dependency with the BB SDK peer range so a clean Git install resolves dependencies.

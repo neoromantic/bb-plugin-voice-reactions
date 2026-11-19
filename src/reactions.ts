@@ -49,8 +49,27 @@ export function mixReactions(
     .map((name) => ({ name, share: share(name) }) satisfies Reaction);
 }
 
-export function describeReactions(reactions: Reaction[], set: ReactionSet) {
-  return reactions
-    .map((r) => `${r.name} ${Math.round(r.share * 100)}% (${set.criteria[r.name]})`)
-    .join("; ");
+function describeReactions(reactions: Reaction[], set: ReactionSet) {
+  const [main, ...others] = reactions.map((r) => `${r.name} (${set.criteria[r.name]})`);
+  return others.length > 0 ? `${main}. With a touch of: ${others.join("; ")}` : `${main}`;
+}
+
+export function linePrompt(
+  reactions: Reaction[],
+  set: ReactionSet,
+  message: string,
+  context: string | null,
+  language: string | null,
+) {
+  return [
+    `Reaction to give: ${describeReactions(reactions, set)}`,
+    `The message: """${message}"""`,
+    ...(context ? [`It replies to: """${context}"""`] : []),
+    ...(language
+      ? [
+          `OUTPUT LANGUAGE: ${language}. Every word of your line is in that language; your accent only changes how the words sound.`,
+          `React now, in ${language}.`,
+        ]
+      : ["React now."]),
+  ].join("\n");
 }

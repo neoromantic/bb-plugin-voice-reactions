@@ -41,7 +41,7 @@ describe("voice", () => {
       response: {
         conversation: "none",
         output_modalities: ["audio"],
-        audio: { output: { voice: "marin", format: { type: "audio/pcm", rate: 24000 } } },
+        audio: { output: { voice: "ballad", format: { type: "audio/pcm", rate: 24000 } } },
         input: [
           {
             type: "message",
@@ -50,10 +50,11 @@ describe("voice", () => {
               {
                 type: "input_text",
                 text: [
-                  'Reaction to give: grumble 60% (irritation, indignation or swearing: commiserate, soothe); tired 30% (fatigue, a late hour, "enough for today": a sympathetic sigh)',
+                  'Reaction to give: grumble (irritation, indignation or swearing: commiserate, soothe). With a touch of: tired (fatigue, a late hour, "enough for today": a sympathetic sigh)',
                   'The message: """everything broke again"""',
                   'It replies to: """the build failed"""',
-                  "React now.",
+                  "OUTPUT LANGUAGE: English. Every word of your line is in that language; your accent only changes how the words sound.",
+                  "React now, in English.",
                 ].join("\n"),
               },
             ],
@@ -61,7 +62,7 @@ describe("voice", () => {
         ],
       },
     });
-    expect(promptOf(request)).toContain("deadpan, loyal butler");
+    expect(promptOf(request)).toContain("gloriously posh English butler");
 
     session.send(audio(480));
     await t.log.until(/stub got 480/);
@@ -264,11 +265,41 @@ describe("messages", () => {
 });
 
 describe("settings", () => {
+  test("the line's language is named for each message: English, Russian, or the role's own", async () => {
+    const t = await start({ settings: { role: "coach" } });
+    const session = await t.sessions.next();
+    let exits = 0;
+    const lineFor = async (text: string) => {
+      await t.say(turnRow({ text }));
+      const request = promptOf(await session.requests.next());
+      session.send(audio(48));
+      session.send(DONE);
+      exits += 1;
+      await t.log.until(/player exited/, exits);
+      return request;
+    };
+    expect(await lineFor("Yes! All the tests are finally green!")).toContain(
+      "React now, in English.",
+    );
+    expect(await lineFor("Ура! Наконец-то все тесты зелёные!")).toContain("React now, in Russian.");
+    await t.host.harness.behavior.setSettings({ role: "shopkeeper" });
+    expect(await lineFor("Ура! Опять зелёные!")).toContain("React now, in English.");
+    await t.host.harness.behavior.setSettings({ role: "custom", persona: "You are a robot." });
+    expect(await lineFor("Ура! И снова зелёные!")).toContain("React now.");
+    await t.host.harness.behavior.setSettings({ language: "German" });
+    expect(await lineFor("Ура! И в третий раз!")).toContain("React now, in German.");
+  });
+
   test("the chosen role speaks, and it can change between lines", async () => {
     const t = await start({ settings: { role: "foreman" } });
     const session = await t.sessions.next();
     await t.say(turnRow({ text: "go ahead" }));
-    expect(promptOf(await session.requests.next())).toContain("stern old Russian foreman");
+    expect(await session.requests.next()).toMatchObject({
+      response: {
+        instructions: expect.stringContaining("stern old Russian construction foreman"),
+        audio: { output: { voice: "cedar" } },
+      },
+    });
     session.send(audio(48));
     session.send(DONE);
     await t.log.until(/player exited/);
