@@ -6,7 +6,6 @@
   told to perform the line, not read it. Four new roles: `noir`, `cowboy`, `chef`, `surfer`.
 - Each role has its own OpenAI voice, used while the `voice` setting is empty. Before, every
   role spoke with `marin`; set `voice` to `marin` to keep that.
-- Lines are held to ten words and about three seconds: live takes ran to five to eight.
 - The voice model is told which reaction leads and which only colour it, without the
   probabilities, so it can no longer say them aloud.
 - The language of the line is named in every request, apart from the accent: Russian for a
