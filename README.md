@@ -22,7 +22,7 @@ your own computer; with a remote BB server you will not hear it.
 Needs BB 0.49.0 or later, an audio player on the server machine and at least one API key.
 
 ```sh
-bb plugin install git:https://github.com/neoromantic/bb-plugin-voice-reactions.git@semver:^0.1.0 --yes
+bb plugin install git:https://github.com/neoromantic/bb-plugin-voice-reactions.git@semver:^0.2.0 --yes
 ```
 
 The player is found automatically: `ffplay` (part of [FFmpeg](https://ffmpeg.org), any
