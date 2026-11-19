@@ -2,6 +2,8 @@
 
 ## 0.1.1
 
+- Align the SQLite type dependency with the BB SDK peer range so a clean Git install resolves dependencies.
+
 - The `shopkeeper` role now speaks English with a Thai accent for every message. In 0.1.0 a
   message written in Russian could make it answer entirely in Thai.
 
