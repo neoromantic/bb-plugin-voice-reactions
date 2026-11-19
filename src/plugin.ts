@@ -18,7 +18,7 @@ import {
 } from "./messages.js";
 import { resolvePlayer } from "./player.js";
 import { DEFAULT_REACTIONS } from "./prompts.js";
-import { describeReactions, parseReactions } from "./reactions.js";
+import { linePrompt, parseReactions } from "./reactions.js";
 import { CUSTOM_ROLE, RANDOM_ROLE, ROLE_NAMES, personaFor } from "./roles.js";
 import {
   VOICE_PROVIDERS,
@@ -86,7 +86,8 @@ export function voiceReactions(options: VoiceReactionsOptions) {
       voice: {
         type: "string",
         label: "Voice",
-        description: "Voice name of the voice model. Empty uses the provider's default.",
+        description:
+          "Voice name of the voice model. Empty uses the role's own voice on OpenAI, else the provider's default.",
         default: "",
       },
       player: {
@@ -237,18 +238,15 @@ export function voiceReactions(options: VoiceReactionsOptions) {
         bb.log.warn(`${message.key}: no audio player found, set the player setting`);
         return;
       }
+      const persona = personaFor(config.role, config.persona, Math.random);
+      const roleVoice = speaker.provider === "openai" ? persona.voice : null;
       voice.speak({
         ...speaker,
         key: message.key,
         createdAt: message.createdAt,
-        voice: config.voice.trim() || VOICE_PROVIDERS[speaker.provider].voice,
-        instructions: personaFor(config.role, config.persona, Math.random),
-        prompt: [
-          `Reaction to give: ${describeReactions(reactions, set)}`,
-          `The message: """${clip(text, MESSAGE_CHARS)}"""`,
-          ...(context ? [`It replies to: """${context}"""`] : []),
-          "React now.",
-        ].join("\n"),
+        voice: config.voice.trim() || roleVoice || VOICE_PROVIDERS[speaker.provider].voice,
+        instructions: persona.instructions,
+        prompt: linePrompt(reactions, set, clip(text, MESSAGE_CHARS), context),
         player: command,
       });
     }

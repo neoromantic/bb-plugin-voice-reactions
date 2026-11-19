@@ -41,7 +41,7 @@ describe("voice", () => {
       response: {
         conversation: "none",
         output_modalities: ["audio"],
-        audio: { output: { voice: "marin", format: { type: "audio/pcm", rate: 24000 } } },
+        audio: { output: { voice: "ballad", format: { type: "audio/pcm", rate: 24000 } } },
         input: [
           {
             type: "message",
@@ -61,7 +61,7 @@ describe("voice", () => {
         ],
       },
     });
-    expect(promptOf(request)).toContain("deadpan, loyal butler");
+    expect(promptOf(request)).toContain("gloriously posh English butler");
 
     session.send(audio(480));
     await t.log.until(/stub got 480/);
@@ -268,7 +268,12 @@ describe("settings", () => {
     const t = await start({ settings: { role: "foreman" } });
     const session = await t.sessions.next();
     await t.say(turnRow({ text: "go ahead" }));
-    expect(promptOf(await session.requests.next())).toContain("stern old Russian foreman");
+    expect(await session.requests.next()).toMatchObject({
+      response: {
+        instructions: expect.stringContaining("stern old Russian construction foreman"),
+        audio: { output: { voice: "cedar" } },
+      },
+    });
     session.send(audio(48));
     session.send(DONE);
     await t.log.until(/player exited/);

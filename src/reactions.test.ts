@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { describeReactions, mixReactions, parseReactions } from "./reactions.js";
+import { linePrompt, mixReactions, parseReactions } from "./reactions.js";
 
 const set = parseReactions(
   "Which reaction?\nnone: nothing\nack: handoff\ngrumble: irritation\ntired: fatigue",
@@ -26,7 +26,14 @@ test("the choice leads, close runners-up are mixed in, none is silence", () => {
     { name: "grumble", share: 0.55 },
     { name: "tired", share: 0.3 },
   ]);
-  expect(describeReactions(mixed ?? [], set)).toBe("grumble 55% (irritation); tired 30% (fatigue)");
+  expect(linePrompt(mixed ?? [], set, "it broke", "the build")).toBe(
+    [
+      "Reaction to give: grumble 55% (irritation); tired 30% (fatigue)",
+      'The message: """it broke"""',
+      'It replies to: """the build"""',
+      "React now.",
+    ].join("\n"),
+  );
   expect(mixReactions("none", { none: 0.9 }, set)).toEqual([]);
   expect(mixReactions("dance", {}, set)).toBeNull();
 });

@@ -43,6 +43,24 @@ export interface VoiceLine extends VoiceRoute {
   player: { command: string; args: string[] };
 }
 
+export function realtimeRequest(
+  line: Pick<VoiceLine, "instructions" | "prompt" | "voice">,
+  modalities: ["audio"] | ["text"],
+) {
+  return {
+    type: "response.create",
+    response: {
+      conversation: "none",
+      output_modalities: modalities,
+      instructions: line.instructions,
+      audio: { output: { voice: line.voice, format: { type: "audio/pcm", rate: 24_000 } } },
+      input: [
+        { type: "message", role: "user", content: [{ type: "input_text", text: line.prompt }] },
+      ],
+    },
+  };
+}
+
 interface Speech {
   line: VoiceLine;
   player: ChildProcess;
@@ -143,18 +161,7 @@ export function createVoice(log: VoiceLog, env: Readonly<Record<string, string |
     const ws = warm(line);
     current.ws = ws;
     current.cancel = () => ws.terminate();
-    const request = JSON.stringify({
-      type: "response.create",
-      response: {
-        conversation: "none",
-        output_modalities: ["audio"],
-        instructions: line.instructions,
-        audio: { output: { voice: line.voice, format: { type: "audio/pcm", rate: 24_000 } } },
-        input: [
-          { type: "message", role: "user", content: [{ type: "input_text", text: line.prompt }] },
-        ],
-      },
-    });
+    const request = JSON.stringify(realtimeRequest(line, ["audio"]));
     if (ws.readyState === WebSocket.OPEN) ws.send(request);
     else ws.once("open", () => ws.send(request));
   }

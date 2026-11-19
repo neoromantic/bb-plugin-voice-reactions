@@ -74,7 +74,7 @@ winget install ffmpeg      # Windows
   you write. Close runners-up are mixed in, so a message can be 60% `grumble` and 30% `tired`.
 - By default an ordinary question or instruction gets `none`. Handoffs, thanks, good news,
   irritation, fatigue, surprise and an explicit request to speak get a reaction.
-- Twelve roles to speak in, from a deadpan butler to a starship computer, a Thai-English
+- Sixteen roles to speak in, from a deadpan butler to a starship computer, a Thai-English
   shopkeeper or a doting grandmother, a random one per line, or a character you write yourself.
 - The voice model writes and speaks the line itself. No text step in between, no audio files:
   chunks go straight to the player.
@@ -91,9 +91,9 @@ Settings are in **Settings → Plugins → Voice reactions**, or
 | Setting            | Default  | What it does                                                               |
 | ------------------ | -------- | -------------------------------------------------------------------------- |
 | `reactions`        | built in | The question and its options; see below                                    |
-| `role`             | `butler` | Who reacts: one of twelve characters, `random`, or `custom`                |
+| `role`             | `butler` | Who reacts: one of sixteen characters, `random`, or `custom`               |
 | `persona`          | –        | Your own character text, used when `role` is `custom`                      |
-| `voice`            | provider | Voice name: `marin` on OpenAI, `alloy` on OpenRouter                       |
+| `voice`            | role     | Voice name. Empty: the role's own voice on OpenAI, `alloy` on OpenRouter   |
 | `player`           | auto     | A player's path, or a full command that plays 24 kHz 16-bit mono PCM stdin |
 | `decisionProvider` | `auto`   | `typesafe`, `openai`, `gateway` or `openrouter`; auto takes the first key  |
 | `decisionModel`    | provider | Model id for the decision                                                  |
@@ -123,14 +123,16 @@ The built-in list has 16 reactions and `none`; it is `DEFAULT_REACTIONS` in
 
 ### Roles
 
-Twelve characters are built in, plus `random`, which draws a different one for every line:
+Sixteen characters are built in, plus `random`, which draws a different one for every line:
 
 ```sh
 bb plugin config voice-reactions set role starship
 ```
 
 `butler` (the default), `starship`, `sitcom`, `gloom`, `foreman`, `shopkeeper`, `pirate`,
-`coach`, `monk`, `narrator`, `sysadmin`, `grandma`. The reaction says what to feel, the role
+`coach`, `monk`, `narrator`, `sysadmin`, `grandma`, `noir`, `cowboy`, `chef`, `surfer`. Each
+has its own accent, manner and voice: a posh English butler, a Scottish sysadmin, a French chef
+who gasps "sacrebleu". The reaction says what to feel, the role
 says who feels it: the same irritation is "Most unfortunate, sir" from the butler and "Morale
 at forty percent, Captain" from the starship. For your own character set `role` to `custom`
 and write it in `persona`; the text stays saved while you try other roles. See

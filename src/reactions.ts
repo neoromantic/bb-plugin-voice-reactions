@@ -49,8 +49,22 @@ export function mixReactions(
     .map((name) => ({ name, share: share(name) }) satisfies Reaction);
 }
 
-export function describeReactions(reactions: Reaction[], set: ReactionSet) {
+function describeReactions(reactions: Reaction[], set: ReactionSet) {
   return reactions
     .map((r) => `${r.name} ${Math.round(r.share * 100)}% (${set.criteria[r.name]})`)
     .join("; ");
+}
+
+export function linePrompt(
+  reactions: Reaction[],
+  set: ReactionSet,
+  message: string,
+  context: string | null,
+) {
+  return [
+    `Reaction to give: ${describeReactions(reactions, set)}`,
+    `The message: """${message}"""`,
+    ...(context ? [`It replies to: """${context}"""`] : []),
+    "React now.",
+  ].join("\n");
 }

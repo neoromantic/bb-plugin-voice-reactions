@@ -69,7 +69,7 @@ It replies to: """…"""
 React now.
 ```
 
-- **OpenAI** (`gpt-realtime` over the Realtime WebSocket, voice `marin`): one socket is opened
+- **OpenAI** (`gpt-realtime` over the Realtime WebSocket, each role with its own voice): one socket is opened
   when the plugin loads and kept after each line, so the session is ready when a message
   arrives. If OpenAI closes it while idle, nothing reconnects; the next message opens a new one
   while the decision is made. Until a decision says to speak, only the handshake has been sent.
