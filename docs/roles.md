@@ -110,5 +110,12 @@ OPENAI_API_KEY=… bun run bench:voice --out /tmp/voice-bench \
 `results.md` in the output folder lists each file with its line, time to first audio, length
 and sha256. With `ELEVENLABS_API_KEY` set it also tries a two-step path the plugin does not
 ship: the OpenAI model writes the line as text and an ElevenLabs model speaks it
-(`--elevenlabs-models`, `--elevenlabs-voices` with voice ids). Run without arguments for the
-lists of roles and samples.
+(`--elevenlabs-models`, `--elevenlabs-voices` with voice ids). `eleven_v3…` and `eleven_v4…`
+models go through ElevenLabs' Text to Dialogue socket, the others through its text-to-speech
+socket. Run without arguments for the lists of roles and samples.
+
+In a run on one Mac in November 2026, `gpt-realtime` started speaking a median 437 ms after the
+voice request and `gpt-realtime-1.5` 745 ms. The ElevenLabs path started later: medians of
+about 550 ms with `eleven_flash_v2_5`, 710 ms with `eleven_v4_turbo` and 760 ms with
+`eleven_v3_conversational`, with single takes of 4 to 12 seconds. That is why the plugin speaks
+with `gpt-realtime` and has no ElevenLabs provider.

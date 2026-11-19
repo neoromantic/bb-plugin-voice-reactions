@@ -77,7 +77,7 @@ const { values } = parseArgs({
     "elevenlabs-voices": { type: "string", default: "JBFqnCBsd6RMkjVDRZzb" },
     takes: { type: "string", default: "1" },
     "realtime-url": { type: "string", default: "wss://api.openai.com/v1/realtime" },
-    "elevenlabs-url": { type: "string", default: "wss://api.elevenlabs.io/v1/text-to-speech" },
+    "elevenlabs-url": { type: "string", default: "wss://api.elevenlabs.io/v1" },
   },
 });
 const REALTIME_URL = values["realtime-url"];
@@ -202,10 +202,16 @@ function realtimeTurn(ws: WebSocket, request: object, onText: (delta: string) =>
 
 function elevenlabsSpeech(model: string, voiceId: string) {
   const startedAt = Date.now();
-  const query = `model_id=${model}&output_format=pcm_24000&auto_mode=true&inactivity_timeout=20`;
-  const { ws, opened } = openSocket(`${ELEVENLABS_URL}/${voiceId}/stream-input?${query}`, {
-    "xi-api-key": elevenlabsKey ?? "",
-  });
+  const dialogue = /^eleven_v[34]/.test(model);
+  const query = `model_id=${model}&output_format=pcm_24000`;
+  const url = dialogue
+    ? `${ELEVENLABS_URL}/text-to-dialogue/stream-input?${query}`
+    : `${ELEVENLABS_URL}/text-to-speech/${voiceId}/stream-input?${query}&auto_mode=true&inactivity_timeout=20`;
+  const first = dialogue ? { voices: [voiceId] } : { text: " " };
+  const last = dialogue ? { close_socket: true } : { text: "" };
+  const part = (text: string) =>
+    dialogue ? { inputs: [{ text, voice_id: voiceId, new_turn: false }] } : { text };
+  const { ws, opened } = openSocket(url, { "xi-api-key": elevenlabsKey ?? "" });
   const done = Promise.withResolvers<{
     audio: Buffer[];
     firstAudioMs: number | null;
@@ -222,8 +228,8 @@ function elevenlabsSpeech(model: string, voiceId: string) {
       firstAudioMs ??= Date.now() - startedAt;
       audio.push(Buffer.from(event.audio, "base64"));
     }
-    if (typeof event.error === "string") error = `${event.error}: ${String(event.message)}`;
-    if (event.isFinal === true) ws.close();
+    if (event.error) error = JSON.stringify(event).slice(0, 300);
+    if (event.isFinal === true || event.is_final === true) ws.close();
   });
   ws.on("close", (code, reasonText) => {
     clearTimeout(timer);
@@ -232,7 +238,7 @@ function elevenlabsSpeech(model: string, voiceId: string) {
   });
   const ready = opened.then(
     (ms) => {
-      ws.send(JSON.stringify({ text: " " }));
+      ws.send(JSON.stringify(first));
       return ms;
     },
     (failure: Error) => {
@@ -241,12 +247,17 @@ function elevenlabsSpeech(model: string, voiceId: string) {
       return null;
     },
   );
-  const send = (text: string) => {
+  const sendWhenOpen = (message: object) => {
     ready.then((ms) => {
-      if (ms !== null && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ text }));
+      if (ms !== null && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(message));
     });
   };
-  return { send, ready, done: done.promise };
+  return {
+    send: (text: string) => sendWhenOpen(part(text)),
+    end: () => sendWhenOpen(last),
+    ready,
+    done: done.promise,
+  };
 }
 
 const results: Result[] = [];
@@ -337,7 +348,7 @@ async function benchElevenlabs(model: string, voiceId: string) {
     const startedAt = Date.now();
     const speech = elevenlabsSpeech(model, voiceId);
     const written = await realtimeTurn(ws, request, (delta) => speech.send(delta));
-    speech.send("");
+    speech.end();
     const [handshakeMs, spoken] = await Promise.all([speech.ready, speech.done]);
     await record(
       {
